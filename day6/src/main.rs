@@ -12,13 +12,24 @@ fn main() {
         .filter(|s| s != "")
         .collect();
 
-    let locs = find_guard_locations(&lines);
+    let (locs, _) = find_guard_locations(&lines);
 
     println!("{locs:?}");
     let part1 = locs.len();
     println!("{part1:?}");
+
+    let mut counter = 0;
+    for vari in variations(&lines) {
+        let (_, circle) = find_guard_locations(&vari);
+        if circle {
+            counter += 1;
+        }
+    }
+
+    println!("{counter:?}");
 }
 
+#[derive(Hash, Eq, PartialEq, Clone)]
 enum Direction {
     Up,
     Right,
@@ -55,7 +66,7 @@ fn char_at_position(lines: &Vec<String>, x: usize, y: usize) -> char {
 fn get_initial_guard_location(lines: &Vec<String>) -> (usize, usize) {
     let xmax = lines[0].len();
     let ymax = lines.len();
-    println!("{xmax},{ymax}");
+    //println!("{xmax},{ymax}");
     for x in 1..xmax + 1 {
         for y in 1..ymax + 1 {
             if char_at_position(lines, x, y) == '^' {
@@ -93,17 +104,58 @@ fn get_next_guard_state(
     return (new_location, new_direction);
 }
 
-fn find_guard_locations(lines: &Vec<String>) -> HashSet<(usize, usize)> {
-    let mut result = HashSet::new();
+fn find_guard_locations(lines: &Vec<String>) -> (HashSet<(usize, usize)>, bool) {
+    let mut states = HashSet::new();
 
     let mut guard_location = get_initial_guard_location(lines);
     let mut guard_direction = Direction::Up;
 
-    while is_in_bounds(lines, &guard_location) {
-        result.insert(guard_location);
+    while is_in_bounds(lines, &guard_location)
+        && !states.contains(&(guard_location, guard_direction.clone()))
+    {
+        states.insert((guard_location, guard_direction.clone()));
         (guard_location, guard_direction) =
             get_next_guard_state(&guard_location, guard_direction, lines);
     }
 
+    let result = states.iter().map(|&(a, _)| a).collect();
+
+    return (
+        result,
+        states.contains(&(guard_location, guard_direction.clone())),
+    );
+}
+
+fn variations(lines: &Vec<String>) -> Vec<Vec<String>> {
+    let xmax = lines[0].len();
+    let ymax = lines.len();
+    let mut result = Vec::new();
+    for x in 1..xmax + 1 {
+        for y in 1..ymax + 1 {
+            if char_at_position(lines, x, y) == '^' {
+                continue;
+            }
+            result.push(variation(lines, (x, y)));
+        }
+    }
+    return result;
+}
+
+fn variation(lines: &Vec<String>, position: (usize, usize)) -> Vec<String> {
+    let xmax = lines[0].len();
+    let ymax = lines.len();
+    let mut result: Vec<String> = Vec::new();
+
+    for y in 1..ymax + 1 {
+        let mut tmp: String = "".to_string();
+        for x in 1..xmax + 1 {
+            if (x, y) != position {
+                tmp.push(char_at_position(lines, x, y));
+            } else {
+                tmp.push('#');
+            }
+        }
+        result.push(tmp);
+    }
     return result;
 }
