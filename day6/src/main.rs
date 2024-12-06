@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::fs;
 
 fn main() {
-    let file_path = "input";
+    let file_path = "CS-input";
 
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
 
@@ -18,15 +18,19 @@ fn main() {
     let part1 = locs.len();
     println!("{part1:?}");
 
-    let mut counter = 0;
+    let mut positions = HashSet::new();
     for vari in variations(&lines) {
-        let (_, circle) = find_guard_locations(&vari);
+        let (_, circle) = find_guard_locations(&vari.0);
         if circle {
-            counter += 1;
+            positions.insert(vari.1);
         }
     }
 
+    let counter = positions.len();
+
     println!("{counter:?}");
+
+    visualise(get_dimensions(&lines), positions);
 }
 
 #[derive(Hash, Eq, PartialEq, Clone)]
@@ -57,6 +61,12 @@ impl Direction {
     fn rotate(&mut self) {
         *self = self.rotated();
     }
+}
+
+fn get_dimensions(lines: &Vec<String>) -> (usize, usize){
+    let xmax = lines[0].len();
+    let ymax = lines.len();
+    return (xmax, ymax);
 }
 
 fn char_at_position(lines: &Vec<String>, x: usize, y: usize) -> char {
@@ -126,7 +136,7 @@ fn find_guard_locations(lines: &Vec<String>) -> (HashSet<(usize, usize)>, bool) 
     );
 }
 
-fn variations(lines: &Vec<String>) -> Vec<Vec<String>> {
+fn variations(lines: &Vec<String>) -> Vec<(Vec<String>, (usize,usize))> {
     let xmax = lines[0].len();
     let ymax = lines.len();
     let mut result = Vec::new();
@@ -135,7 +145,7 @@ fn variations(lines: &Vec<String>) -> Vec<Vec<String>> {
             if char_at_position(lines, x, y) == '^' {
                 continue;
             }
-            result.push(variation(lines, (x, y)));
+            result.push((variation(lines, (x, y)), (x,y)));
         }
     }
     return result;
@@ -158,4 +168,17 @@ fn variation(lines: &Vec<String>, position: (usize, usize)) -> Vec<String> {
         result.push(tmp);
     }
     return result;
+}
+
+fn visualise(dimensions: (usize, usize), positions: HashSet<(usize,usize)>) {
+    for y in 0..dimensions.1{
+        let mut line = "".to_string();
+        for x in 0..dimensions.0{
+            if positions.contains(&(x+1,y+1)){
+                line.push('O');
+            }
+            else{line.push('.')};
+        }
+        println!("{line}");
+    }
 }
