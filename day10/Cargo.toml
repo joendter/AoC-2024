@@ -1,0 +1,8 @@
+[package]
+name = "day10"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vector2d={ git = "https://gitlab.com/joendter/vec2d-rs.git" }
+
