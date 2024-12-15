@@ -1,0 +1,9 @@
+[package]
+name = "day14"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+AoClib = {path = "../AoClib/"}
+vector2d={ git = "https://gitlab.com/joendter/vec2d-rs.git" }
+modular="1.0.0"

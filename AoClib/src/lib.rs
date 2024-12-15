@@ -1,3 +1,4 @@
+use std::fs;
 use vector2d::Vector2D;
 
 pub fn get_dimensions(lines: &Vec<Vec<u8>>) -> Vector2D<i64> {
@@ -20,4 +21,16 @@ pub fn change_u8_at_position(lines: &mut Vec<Vec<u8>>, location: Vector2D<i64>, 
     let y = TryInto::<usize>::try_into(location.y).unwrap();
     let x = TryInto::<usize>::try_into(location.x).unwrap();
     lines[y][x] = new_value;
+}
+
+pub fn read_lines(file_path: String) -> Vec<String> {
+    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+
+    let lines: Vec<String> = contents
+        .split("\n")
+        .filter(|&s| s != "")
+        .map(|s| s.to_string())
+        .collect();
+
+    return lines;
 }
