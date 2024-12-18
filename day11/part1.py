@@ -31,16 +31,19 @@ def iterate(base, iterations):
         current = next(current)
     return current
 
+def summarise(result):
+    sum_a= 0
+    for i in result.keys():
+        sum_a += result[i]
+    return sum_a
 
-res = iterate(real, 75)
-sum_a= 0
-for i in res.keys():
-    sum_a += res[i]
-print(sum_a)
+print(summarise(iterate(real,75)))
+print(summarise(iterate(real,1000)))
 
-print(len(iterate(start, 25)))
-print(iterate(start, 6))
+#print(len(iterate(start, 25)))
+#print(iterate(start, 6))
 cmp = {}
 for i in [2097446912 ,14168 ,4048 ,2, 0, 2, 4, 40, 48, 2024, 40, 48, 80, 96, 2, 8, 6, 7, 6, 0, 3, 2]:
     add(cmp, i, 1)
-print(cmp)
+#print(cmp)
+
